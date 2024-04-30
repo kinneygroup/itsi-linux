@@ -316,9 +316,9 @@
         },
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linux-user-activity-services"
+                "SHKPI-da-itsi-cp-atlas-linux-user-activity"
             ],
-            "service_id": "da-itsi-cp-atlas-linux-user-activity-services"
+            "service_id": "da-itsi-cp-atlas-linux-user-activity"
         }
     ],
     "team_id": "default_itsi_security_group",
