@@ -27,10 +27,10 @@
             "recommended": false
         }
     },
-    "description": "Ensures the network components of the Linux system are functioning properly and efficiently.",
+    "description": "Manages the storage subsystems, including disk usage and I/O operations.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-network-services",
+    "key": "da-itsi-cp-atlas-linux-storage-services",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-network-services",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-storage-services",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,8 +211,8 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
@@ -220,17 +220,17 @@
             "search_entities": null,
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
             ],
             "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-network-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_entities": "",
             "search_type": "adhoc",
-            "service_title": "Linux Network Services",
+            "service_title": "Linux Storage Services",
             "threshold_direction": "both",
             "threshold_eval": "",
             "threshold_field": "aggregate",
@@ -297,7 +297,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -315,7 +315,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host",
+            "base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -330,7 +330,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Measures incoming and outgoing network traffic to assess network throughput.",
+            "description": "Monitors the percentage of disk space used to prevent disk space exhaustion.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -345,7 +345,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -359,8 +359,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-network-services-network-traffic",
-            "kpi_base_search": "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host",
+            "key": "da-itsi-cp-atlas-linux-storage-services-disk-usage",
+            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,35 +369,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic, true, true, true)` | eval kpi=\"Network Traffic\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`",
+            "search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
             "search_alert": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic, true, true, true)` | eval kpi=\"Network Traffic\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`"
             ],
             "search_time_series": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`"
             ],
             "search_time_series_aggregate": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`"
             ],
             "search_time_series_entities": [
-                "`itsi_index` sourcetype=linux:netstat OR sourcetype=linux:netmetrics | mstats avg(_value) as KPI_value where index=* by host, metric_name | search metric_name=\"network.in.bytes\" OR metric_name=\"network.out.bytes\" | eval KPI_value=KPI_value/1024 | stats sum(KPI_value) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-traffic)`"
+                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Network Services",
+            "service_title": "Linux Storage Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "KPI_value",
+            "threshold_field": "Disk_Usage",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -410,7 +410,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -424,7 +424,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -435,7 +435,7 @@
                     }
                 }
             },
-            "title": "Network Traffic",
+            "title": "Disk Usage",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -462,7 +462,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -480,7 +480,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host",
+            "base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -495,7 +495,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Monitors the rate of lost packets in the network to identify potential connectivity issues.",
+            "description": "Tracks the number of inodes used to ensure file system integrity and availability.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -510,7 +510,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -524,8 +524,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-network-services-packet-loss",
-            "kpi_base_search": "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host",
+            "key": "da-itsi-cp-atlas-linux-storage-services-inode-usage",
+            "kpi_base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +534,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss, true, true, true)` | eval kpi=\"Packet Loss\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`",
+            "search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`",
             "search_alert": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss, true, true, true)` | eval kpi=\"Packet Loss\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`"
             ],
             "search_time_series": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`"
             ],
             "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:netstat | stats avg(packet_loss) as packet_loss_rate by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-packet-loss)`"
+                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-inode-usage)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Network Services",
+            "service_title": "Linux Storage Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "packet_loss_rate",
+            "threshold_field": "inode_count",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -575,7 +575,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -589,7 +589,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -600,7 +600,7 @@
                     }
                 }
             },
-            "title": "Packet Loss",
+            "title": "Inode Usage",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -627,7 +627,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -645,7 +645,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host",
+            "base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -660,7 +660,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Tracks the rate of network errors to detect faulty network hardware or configurations.",
+            "description": "Measures disk I/O operations to assess the performance of storage subsystems.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -675,7 +675,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "NetworkLatency",
+                "metric_field": "kpi_value",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -689,8 +689,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-network-services-error-rates",
-            "kpi_base_search": "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host",
+            "key": "da-itsi-cp-atlas-linux-storage-services-read-write-operations",
+            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -699,35 +699,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates, true, true, true)` | eval kpi=\"Error Rates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`",
+            "search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`",
             "search_alert": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates, true, true, true)` | eval kpi=\"Error Rates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`"
             ],
             "search_time_series": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`"
             ],
             "search_time_series_entities": [
-                "`linux_network_index` sourcetype=linux:netstat | mstats count WHERE metric_name=network.error by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-error-rates)`"
+                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-write-operations)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Network Services",
+            "service_title": "Linux Storage Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "count",
+            "threshold_field": "kpi_value",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -740,7 +740,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -754,7 +754,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "NetworkLatency",
+                            "metric_field": "kpi_value",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -765,172 +765,7 @@
                     }
                 }
             },
-            "title": "Error Rates",
-            "trending_ad": {
-                "sensitivity": 8
-            },
-            "type": "kpis_primary",
-            "tz_offset": null,
-            "unit": "",
-            "urgency": 5.0,
-            "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
-        },
-        {
-            "adaptive_thresholding_training_window": "-7d",
-            "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
-            "aggregate_statop": "avg",
-            "aggregate_threshold_alert_enabled": false,
-            "aggregate_thresholds": {
-                "base_severity_color": "#99D18B",
-                "base_severity_color_light": "#DCEFD7",
-                "base_severity_label": "normal",
-                "base_severity_value": 2.0,
-                "gauge_max": 100,
-                "gauge_min": 0,
-                "is_max_static": false,
-                "is_min_static": true,
-                "metric_field": "NetworkLatency",
-                "render_boundary_max": 100.0,
-                "render_boundary_min": 0.0,
-                "threshold_levels": []
-            },
-            "aggregate_thresholds_alert_enabled": false,
-            "aggregate_thresholds_custom_alert_enabled": false,
-            "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
-            "alert_lag": "30",
-            "alert_on": "both",
-            "alert_period": "5",
-            "anomaly_detection_alerting_enabled": false,
-            "anomaly_detection_is_enabled": false,
-            "anomaly_detection_sensitivity": null,
-            "anomaly_detection_training_window": null,
-            "backfill_earliest_time": "-7d",
-            "backfill_enabled": false,
-            "base_search": "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host",
-            "base_search_id": null,
-            "base_search_metric": null,
-            "cohesive_ad": {
-                "sensitivity": 8
-            },
-            "cohesive_anomaly_detection_is_enabled": false,
-            "datamodel": {
-                "datamodel": "",
-                "field": "",
-                "object": "",
-                "owner_field": ""
-            },
-            "datamodel_filter": [],
-            "datamodel_filter_clauses": null,
-            "description": "Measures the time taken for data to travel from source to destination to evaluate network speed.",
-            "did_load_recommendation": false,
-            "enabled": false,
-            "entity_filter_field": "host",
-            "entity_split_field": "host",
-            "entity_statop": "avg",
-            "entity_thresholds": {
-                "base_severity_color": "#99D18B",
-                "base_severity_color_light": "#DCEFD7",
-                "base_severity_label": "normal",
-                "base_severity_value": 2.0,
-                "gauge_max": 100,
-                "gauge_min": 0,
-                "is_max_static": false,
-                "is_min_static": true,
-                "metric_field": "NetworkLatency",
-                "render_boundary_max": 100.0,
-                "render_boundary_min": 0.0,
-                "threshold_levels": []
-            },
-            "fill_gaps": "null_value",
-            "gap_custom_alert_value": 0.0,
-            "gap_severity": "unknown",
-            "gap_severity_color": "#CCCCCC",
-            "gap_severity_color_light": "#EEEEEE",
-            "gap_severity_value": "-1",
-            "is_filter_entities_to_service": false,
-            "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-network-services-network-latency",
-            "kpi_base_search": "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host",
-            "kpi_template_kpi_id": "",
-            "kpi_threshold_template_id": "",
-            "metric_qualifier": "",
-            "metric_search_spec": {
-                "metric_index": "",
-                "metric_name": ""
-            },
-            "recommendation_training_window": "-30d",
-            "search": "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency, true, true, true)` | eval kpi=\"Network Latency\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`",
-            "search_alert": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency, true, true, true)` | eval kpi=\"Network Latency\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-network-services\" | `assess_urgency` | `gettime`"
-            ],
-            "search_alert_earliest": "5",
-            "search_alert_entities": "",
-            "search_buckets": "",
-            "search_entities": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`"
-            ],
-            "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`"
-            ],
-            "search_time_series": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`"
-            ],
-            "search_time_series_aggregate": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`"
-            ],
-            "search_time_series_entities": [
-                "`itsi_index` sourcetype=linux:net:latency | mstats avg(_value) as NetworkLatency by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-network-services, da-itsi-cp-atlas-linuxlinux-network-services-network-latency)`"
-            ],
-            "search_type": "adhoc",
-            "service_title": "Linux Network Services",
-            "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "NetworkLatency",
-            "time_policies": {
-                "policies": {
-                    "default_policy": {
-                        "aggregate_thresholds": {
-                            "base_severity_color": "#99D18B",
-                            "base_severity_color_light": "#DCEFD7",
-                            "base_severity_label": "normal",
-                            "base_severity_value": 2.0,
-                            "gauge_max": 100,
-                            "gauge_min": 0,
-                            "is_max_static": false,
-                            "is_min_static": true,
-                            "metric_field": "NetworkLatency",
-                            "render_boundary_max": 100.0,
-                            "render_boundary_min": 0.0,
-                            "threshold_levels": []
-                        },
-                        "entity_thresholds": {
-                            "base_severity_color": "#99D18B",
-                            "base_severity_color_light": "#DCEFD7",
-                            "base_severity_label": "normal",
-                            "base_severity_value": 2.0,
-                            "gauge_max": 100,
-                            "gauge_min": 0,
-                            "is_max_static": false,
-                            "is_min_static": true,
-                            "metric_field": "NetworkLatency",
-                            "render_boundary_max": 100.0,
-                            "render_boundary_min": 0.0,
-                            "threshold_levels": []
-                        },
-                        "policy_type": "static",
-                        "time_blocks": [],
-                        "title": "Default"
-                    }
-                }
-            },
-            "title": "Network Latency",
+            "title": "Read/Write Operations",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -951,20 +786,20 @@
     "services_depending_on_me": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-network-services"
+                "SHKPI-da-itsi-cp-atlas-linux-storage-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-operating-system-health"
+            "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
     "services_depends_on": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+                "SHKPI-da-itsi-cp-atlas-linux-process-and-service-availability"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+            "service_id": "da-itsi-cp-atlas-linux-process-and-service-availability"
         }
     ],
     "team_id": "default_itsi_security_group",
-    "title": "Linux Network Services",
+    "title": "Linux Storage Services",
     "version": "0.0.1"
 }

@@ -27,10 +27,10 @@
             "recommended": false
         }
     },
-    "description": "Monitors and manages user interactions with the Linux system.",
+    "description": "Manages the compute resources, including CPU and memory usage.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-user-activity-services",
+    "key": "da-itsi-cp-atlas-linux-compute-services",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-user-activity-services",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-compute-services",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,8 +211,8 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
@@ -220,17 +220,17 @@
             "search_entities": null,
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
             ],
             "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-user-activity-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_entities": "",
             "search_type": "adhoc",
-            "service_title": "Linux User Activity Services",
+            "service_title": "Linux Compute Services",
             "threshold_direction": "both",
             "threshold_eval": "",
             "threshold_field": "aggregate",
@@ -297,7 +297,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "KPI_value",
+                "metric_field": "system_load_average",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -315,7 +315,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host",
+            "base_search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -330,7 +330,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Counts the number of active user sessions to monitor user interactions with the system.",
+            "description": "Monitors the percentage of CPU time being used by processes to prevent overloading.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -345,7 +345,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "KPI_value",
+                "metric_field": "system_load_average",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -359,8 +359,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions",
-            "kpi_base_search": "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host",
+            "key": "da-itsi-cp-atlas-linux-compute-services-cpu-usage",
+            "kpi_base_search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,35 +369,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions, true, true, true)` | eval kpi=\"Active User Sessions\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-user-activity-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`",
+            "search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
             "search_alert": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions, true, true, true)` | eval kpi=\"Active User Sessions\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-user-activity-services\" | `assess_urgency` | `gettime`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
             ],
             "search_time_series": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
             ],
             "search_time_series_entities": [
-                "`linux_index` sourcetype=linux_secure | stats count as active_user_sessions by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-active-user-sessions)`"
+                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux User Activity Services",
+            "service_title": "Linux Compute Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "active_user_sessions",
+            "threshold_field": "cpu_usage",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -410,7 +410,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "KPI_value",
+                            "metric_field": "system_load_average",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -424,7 +424,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "KPI_value",
+                            "metric_field": "system_load_average",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -435,7 +435,7 @@
                     }
                 }
             },
-            "title": "Active User Sessions",
+            "title": "CPU Usage",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -462,7 +462,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "KPI_value",
+                "metric_field": "system_load_average",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -480,7 +480,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host",
+            "base_search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -495,7 +495,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Measures the resources consumed by users to ensure fair usage and identify anomalies.",
+            "description": "Tracks the amount of RAM used to identify memory leaks and optimize memory allocation.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -510,7 +510,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "KPI_value",
+                "metric_field": "system_load_average",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -524,8 +524,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption",
-            "kpi_base_search": "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host",
+            "key": "da-itsi-cp-atlas-linux-compute-services-memory-usage",
+            "kpi_base_search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +534,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption, true, true, true)` | eval kpi=\"User Resource Consumption\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-user-activity-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`",
+            "search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
             "search_alert": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption, true, true, true)` | eval kpi=\"User Resource Consumption\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-user-activity-services\" | `assess_urgency` | `gettime`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
             ],
             "search_time_series": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
             ],
             "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:cpu OR sourcetype=linux:memory OR sourcetype=linux:disk OR sourcetype=linux:network OR sourcetype=linux:processes OR sourcetype=linux:io OR sourcetype=linux:swap OR sourcetype=linux:uptime OR sourcetype=linux:temperature OR sourcetype=linux:syslog OR sourcetype=linux:security OR sourcetype=linux:user_activity | eval user_resource_consumption=case(sourcetype=\"linux:cpu\", user_time + system_time + nice_time, sourcetype=\"linux:memory\", used_memory, sourcetype=\"linux:disk\", used_percentage, sourcetype=\"linux:network\", incoming_traffic + outgoing_traffic, sourcetype=\"linux:processes\", process_cpu_usage + process_memory_usage, sourcetype=\"linux:io\", io_wait_time, sourcetype=\"linux:swap\", swap_usage, sourcetype=\"linux:uptime\", uptime, sourcetype=\"linux:temperature\", temperature, sourcetype=\"linux:syslog\", error_count, sourcetype=\"linux:security\", failed_login_attempts, sourcetype=\"linux:user_activity\", active_user_sessions) | stats avg(user_resource_consumption) as KPI_value by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-user-activity-services, da-itsi-cp-atlas-linuxlinux-user-activity-services-user-resource-consumption)`"
+                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux User Activity Services",
+            "service_title": "Linux Compute Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "KPI_value",
+            "threshold_field": "Memory_Usage",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -575,7 +575,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "KPI_value",
+                            "metric_field": "system_load_average",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -589,7 +589,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "KPI_value",
+                            "metric_field": "system_load_average",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -600,7 +600,172 @@
                     }
                 }
             },
-            "title": "User Resource Consumption",
+            "title": "Memory Usage",
+            "trending_ad": {
+                "sensitivity": 8
+            },
+            "type": "kpis_primary",
+            "tz_offset": null,
+            "unit": "",
+            "urgency": 5.0,
+            "use_time_policies": false,
+            "was_recommendation_modified": false,
+            "version": "0.0.1"
+        },
+        {
+            "adaptive_thresholding_training_window": "-7d",
+            "adaptive_thresholds_is_enabled": false,
+            "aggregate_eval": null,
+            "aggregate_statop": "avg",
+            "aggregate_threshold_alert_enabled": false,
+            "aggregate_thresholds": {
+                "base_severity_color": "#99D18B",
+                "base_severity_color_light": "#DCEFD7",
+                "base_severity_label": "normal",
+                "base_severity_value": 2.0,
+                "gauge_max": 100,
+                "gauge_min": 0,
+                "is_max_static": false,
+                "is_min_static": true,
+                "metric_field": "system_load_average",
+                "render_boundary_max": 100.0,
+                "render_boundary_min": 0.0,
+                "threshold_levels": []
+            },
+            "aggregate_thresholds_alert_enabled": false,
+            "aggregate_thresholds_custom_alert_enabled": false,
+            "aggregate_thresholds_custom_alert_rules": [],
+            "alert_eval": null,
+            "alert_lag": "30",
+            "alert_on": "both",
+            "alert_period": "5",
+            "anomaly_detection_alerting_enabled": false,
+            "anomaly_detection_is_enabled": false,
+            "anomaly_detection_sensitivity": null,
+            "anomaly_detection_training_window": null,
+            "backfill_earliest_time": "-7d",
+            "backfill_enabled": false,
+            "base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average",
+            "base_search_id": null,
+            "base_search_metric": null,
+            "cohesive_ad": {
+                "sensitivity": 8
+            },
+            "cohesive_anomaly_detection_is_enabled": false,
+            "datamodel": {
+                "datamodel": "",
+                "field": "",
+                "object": "",
+                "owner_field": ""
+            },
+            "datamodel_filter": [],
+            "datamodel_filter_clauses": null,
+            "description": "Measures the average system load over time to assess overall system performance.",
+            "did_load_recommendation": false,
+            "enabled": false,
+            "entity_filter_field": "host",
+            "entity_split_field": "host",
+            "entity_statop": "avg",
+            "entity_thresholds": {
+                "base_severity_color": "#99D18B",
+                "base_severity_color_light": "#DCEFD7",
+                "base_severity_label": "normal",
+                "base_severity_value": 2.0,
+                "gauge_max": 100,
+                "gauge_min": 0,
+                "is_max_static": false,
+                "is_min_static": true,
+                "metric_field": "system_load_average",
+                "render_boundary_max": 100.0,
+                "render_boundary_min": 0.0,
+                "threshold_levels": []
+            },
+            "fill_gaps": "null_value",
+            "gap_custom_alert_value": 0.0,
+            "gap_severity": "unknown",
+            "gap_severity_color": "#CCCCCC",
+            "gap_severity_color_light": "#EEEEEE",
+            "gap_severity_value": "-1",
+            "is_filter_entities_to_service": false,
+            "is_recommended_time_policies": false,
+            "is_split_by_entity": false,
+            "key": "da-itsi-cp-atlas-linux-compute-services-system-load-average",
+            "kpi_base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average",
+            "kpi_template_kpi_id": "",
+            "kpi_threshold_template_id": "",
+            "metric_qualifier": "",
+            "metric_search_spec": {
+                "metric_index": "",
+                "metric_name": ""
+            },
+            "recommendation_training_window": "-30d",
+            "search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average, true, true, true)` | eval kpi=\"System Load Average\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`",
+            "search_alert": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average, true, true, true)` | eval kpi=\"System Load Average\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
+            ],
+            "search_alert_earliest": "5",
+            "search_alert_entities": "",
+            "search_buckets": "",
+            "search_entities": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+            ],
+            "search_occurrences": 1.0,
+            "search_time_compare": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+            ],
+            "search_time_series": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+            ],
+            "search_time_series_aggregate": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+            ],
+            "search_time_series_entities": [
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+            ],
+            "search_type": "adhoc",
+            "service_title": "Linux Compute Services",
+            "threshold_direction": "both",
+            "threshold_eval": null,
+            "threshold_field": "system_load_average",
+            "time_policies": {
+                "policies": {
+                    "default_policy": {
+                        "aggregate_thresholds": {
+                            "base_severity_color": "#99D18B",
+                            "base_severity_color_light": "#DCEFD7",
+                            "base_severity_label": "normal",
+                            "base_severity_value": 2.0,
+                            "gauge_max": 100,
+                            "gauge_min": 0,
+                            "is_max_static": false,
+                            "is_min_static": true,
+                            "metric_field": "system_load_average",
+                            "render_boundary_max": 100.0,
+                            "render_boundary_min": 0.0,
+                            "threshold_levels": []
+                        },
+                        "entity_thresholds": {
+                            "base_severity_color": "#99D18B",
+                            "base_severity_color_light": "#DCEFD7",
+                            "base_severity_label": "normal",
+                            "base_severity_value": 2.0,
+                            "gauge_max": 100,
+                            "gauge_min": 0,
+                            "is_max_static": false,
+                            "is_min_static": true,
+                            "metric_field": "system_load_average",
+                            "render_boundary_max": 100.0,
+                            "render_boundary_min": 0.0,
+                            "threshold_levels": []
+                        },
+                        "policy_type": "static",
+                        "time_blocks": [],
+                        "title": "Default"
+                    }
+                }
+            },
+            "title": "System Load Average",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -621,20 +786,20 @@
     "services_depending_on_me": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-user-activity-services"
+                "SHKPI-da-itsi-cp-atlas-linux-compute-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-operating-system-health"
+            "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
     "services_depends_on": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+                "SHKPI-da-itsi-cp-atlas-linux-process-and-service-availability"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+            "service_id": "da-itsi-cp-atlas-linux-process-and-service-availability"
         }
     ],
     "team_id": "default_itsi_security_group",
-    "title": "Linux User Activity Services",
+    "title": "Linux Compute Services",
     "version": "0.0.1"
 }

@@ -27,10 +27,10 @@
             "recommended": false
         }
     },
-    "description": "Manages the storage subsystems, including disk usage and I/O operations.",
+    "description": "Ensures the security and integrity of the Linux system.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-storage-services",
+    "key": "da-itsi-cp-atlas-linux-security-services",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-storage-services",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-security-services",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,8 +211,8 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
@@ -220,17 +220,17 @@
             "search_entities": null,
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
             ],
             "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | timechart avg(health_score) AS aggregate"
+                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-security-services)` | timechart avg(health_score) AS aggregate"
             ],
             "search_time_series_entities": "",
             "search_type": "adhoc",
-            "service_title": "Linux Storage Services",
+            "service_title": "Linux Security Services",
             "threshold_direction": "both",
             "threshold_eval": "",
             "threshold_field": "aggregate",
@@ -297,7 +297,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -315,7 +315,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
+            "base_search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -330,7 +330,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Monitors the percentage of disk space used to prevent disk space exhaustion.",
+            "description": "Counts the number of unsuccessful login attempts to detect potential unauthorized access.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -345,7 +345,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -359,8 +359,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage",
-            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
+            "key": "da-itsi-cp-atlas-linux-security-services-failed-login-attempts",
+            "kpi_base_search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,35 +369,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`",
+            "search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts, true, true, true)` | eval kpi=\"Failed Login Attempts\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`",
             "search_alert": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts, true, true, true)` | eval kpi=\"Failed Login Attempts\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`"
             ],
             "search_time_series": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`"
             ],
             "search_time_series_entities": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
+                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-failed-login-attempts)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Storage Services",
+            "service_title": "Linux Security Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "Disk_Usage",
+            "threshold_field": "failed_login_attempts",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -410,7 +410,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -424,7 +424,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -435,7 +435,7 @@
                     }
                 }
             },
-            "title": "Disk Usage",
+            "title": "Failed Login Attempts",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -462,7 +462,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -480,7 +480,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
+            "base_search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -495,7 +495,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Tracks the number of inodes used to ensure file system integrity and availability.",
+            "description": "Monitors the operational status of the firewall to ensure network security measures are active.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -510,7 +510,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -524,8 +524,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage",
-            "kpi_base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
+            "key": "da-itsi-cp-atlas-linux-security-services-firewall-status",
+            "kpi_base_search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +534,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`",
+            "search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status, true, true, true)` | eval kpi=\"Firewall Status\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`",
             "search_alert": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status, true, true, true)` | eval kpi=\"Firewall Status\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`"
             ],
             "search_time_series": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`"
             ],
             "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
+                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-firewall-status)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Storage Services",
+            "service_title": "Linux Security Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "inode_count",
+            "threshold_field": "Firewall_Status",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -575,7 +575,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -589,7 +589,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -600,7 +600,7 @@
                     }
                 }
             },
-            "title": "Inode Usage",
+            "title": "Firewall Status",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -627,7 +627,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -645,7 +645,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
+            "base_search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -660,7 +660,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Measures disk I/O operations to assess the performance of storage subsystems.",
+            "description": "Tracks the application of security patches to maintain system integrity against vulnerabilities.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -675,7 +675,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "Security_Patch_Updates",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -689,8 +689,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations",
-            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
+            "key": "da-itsi-cp-atlas-linux-security-services-security-patch-updates",
+            "kpi_base_search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -699,35 +699,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`",
+            "search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates, true, true, true)` | eval kpi=\"Security Patch Updates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`",
             "search_alert": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates, true, true, true)` | eval kpi=\"Security Patch Updates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-security-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`"
             ],
             "search_time_series": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`"
             ],
             "search_time_series_entities": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
+                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-security-services, da-itsi-cp-atlas-linux-security-services-security-patch-updates)`"
             ],
             "search_type": "adhoc",
-            "service_title": "Linux Storage Services",
+            "service_title": "Linux Security Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "kpi_value",
+            "threshold_field": "Security_Patch_Updates",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -740,7 +740,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -754,7 +754,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "kpi_value",
+                            "metric_field": "Security_Patch_Updates",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -765,7 +765,7 @@
                     }
                 }
             },
-            "title": "Read/Write Operations",
+            "title": "Security Patch Updates",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -786,20 +786,20 @@
     "services_depending_on_me": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-storage-services"
+                "SHKPI-da-itsi-cp-atlas-linux-security-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-operating-system-health"
+            "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
     "services_depends_on": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+                "SHKPI-da-itsi-cp-atlas-linux-process-and-service-availability"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
+            "service_id": "da-itsi-cp-atlas-linux-process-and-service-availability"
         }
     ],
     "team_id": "default_itsi_security_group",
-    "title": "Linux Storage Services",
+    "title": "Linux Security Services",
     "version": "0.0.1"
 }
