@@ -626,14 +626,7 @@
             "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
-    "services_depends_on": [
-        {
-            "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linux-process-and-service-availability"
-            ],
-            "service_id": "da-itsi-cp-atlas-linux-process-and-service-availability"
-        }
-    ],
+    "services_depends_on": [],
     "team_id": "default_itsi_security_group",
     "title": "Linux User Activity Services",
     "version": "0.0.1"
