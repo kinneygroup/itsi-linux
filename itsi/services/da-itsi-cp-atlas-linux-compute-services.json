@@ -297,7 +297,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -345,7 +345,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -410,7 +410,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -424,7 +424,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -462,7 +462,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -510,7 +510,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -575,7 +575,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -589,7 +589,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -627,7 +627,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -645,7 +645,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average",
+            "base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -675,7 +675,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "system_load_average",
+                "metric_field": "swap_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -689,8 +689,8 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linux-compute-services-system-load-average",
-            "kpi_base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average",
+            "key": "da-itsi-cp-atlas-linux-compute-services-swap-usage",
+            "kpi_base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -699,35 +699,35 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average, true, true, true)` | eval kpi=\"System Load Average\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`",
+            "search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
             "search_alert": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average, true, true, true)` | eval kpi=\"System Load Average\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
             ],
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
             ],
             "search_occurrences": 1.0,
             "search_time_compare": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
             ],
             "search_time_series": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
             ],
             "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
             ],
             "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as system_load_average where metric_name=\"load_average\" by host | eval aggregate_field=system_load_average | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-system-load-average)`"
+                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
             ],
             "search_type": "adhoc",
             "service_title": "Linux Compute Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "system_load_average",
+            "threshold_field": "swap_usage",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -740,7 +740,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -754,7 +754,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "system_load_average",
+                            "metric_field": "swap_usage",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -765,7 +765,7 @@
                     }
                 }
             },
-            "title": "System Load Average",
+            "title": "Swap Usage",
             "trending_ad": {
                 "sensitivity": 8
             },
