@@ -27,10 +27,10 @@
             "recommended": false
         }
     },
-    "description": "Ensures the security and integrity of the Linux system.",
+    "description": "Ensures the network components of the Linux system are functioning properly and efficiently.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-security-services",
+    "key": "da-itsi-cp-atlas-linux-network-services",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-security-services",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-network-services",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,26 +211,20 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": null,
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
-            ],
-            "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)` | timechart avg(health_score) AS aggregate"
-            ],
-            "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-security-services)` | timechart avg(health_score) AS aggregate"
-            ],
+            "search_time_compare": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))",
+            "search_time_series": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)` | timechart avg(health_score) AS aggregate",
+            "search_time_series_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-network-services)` | timechart avg(health_score) AS aggregate",
             "search_time_series_entities": "",
             "search_type": "adhoc",
-            "service_title": "Linux Security Services",
+            "service_title": "Linux Network Services",
             "threshold_direction": "both",
             "threshold_eval": "",
             "threshold_field": "aggregate",
@@ -285,7 +279,7 @@
         {
             "adaptive_thresholding_training_window": "-7d",
             "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
+            "aggregate_eval": "",
             "aggregate_statop": "avg",
             "aggregate_threshold_alert_enabled": false,
             "aggregate_thresholds": {
@@ -297,7 +291,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -305,7 +299,7 @@
             "aggregate_thresholds_alert_enabled": false,
             "aggregate_thresholds_custom_alert_enabled": false,
             "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
+            "alert_eval": "",
             "alert_lag": "30",
             "alert_on": "both",
             "alert_period": "5",
@@ -315,7 +309,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host",
+            "base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -330,7 +324,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Counts the number of unsuccessful login attempts to detect potential unauthorized access.",
+            "description": "Tracks the count of network errors to detect faulty network hardware or configurations.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -345,7 +339,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
+                "metric_field": "error_count",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -358,9 +352,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts",
-            "kpi_base_search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host",
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-network-services-error-rates",
+            "kpi_base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,35 +363,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts, true, true, true)` | eval kpi=\"Failed Login Attempts\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`",
-            "search_alert": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts, true, true, true)` | eval kpi=\"Failed Login Attempts\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_entity(avg, error_count, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates, true, true, true)` | eval kpi=\"Error Count\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_single_value(avg, avg, error_count, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates)`",
+            "search_alert": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_entity(avg, error_count, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates, true, true, true)` | eval kpi=\"Error Count\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`"
-            ],
+            "search_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_single_value(avg, avg, error_count, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`"
-            ],
-            "search_time_series": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_index` sourcetype=linux_secure OR sourcetype=linux_audit | search \"Failed password\" | stats count as failed_login_attempts by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-failed-login-attempts)`"
-            ],
+            "search_time_compare": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_and_compare(avg, avg, error_count, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates)`",
+            "search_time_series": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_entity_time_series(avg, error_count, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates)`",
+            "search_time_series_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_entity_time_series(avg, error_count, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-error-rates)`",
+            "search_time_series_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXerrors) as TXerrors, avg(RXerrors) as RXerrors | eval error_count = RXerrors+TXerrors | `aggregate_raw_into_limited_entity_time_series(avg, error_count, \"host\", 5)`",
             "search_type": "adhoc",
-            "service_title": "Linux Security Services",
+            "service_title": "Linux Network Services",
             "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "failed_login_attempts",
+            "threshold_eval": "",
+            "threshold_field": "error_count",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -410,7 +392,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
+                            "metric_field": "NetworkLatency",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -424,7 +406,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
+                            "metric_field": "NetworkLatency",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -435,7 +417,7 @@
                     }
                 }
             },
-            "title": "Failed Login Attempts",
+            "title": "Error Count",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -444,8 +426,159 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
+        },
+        {
+            "adaptive_thresholding_training_window": "-7d",
+            "adaptive_thresholds_is_enabled": false,
+            "aggregate_eval": "",
+            "aggregate_statop": "avg",
+            "aggregate_threshold_alert_enabled": false,
+            "aggregate_thresholds": {
+                "base_severity_color": "#99D18B",
+                "base_severity_color_light": "#DCEFD7",
+                "base_severity_label": "normal",
+                "base_severity_value": 2.0,
+                "gauge_max": 100,
+                "gauge_min": 0,
+                "is_max_static": false,
+                "is_min_static": true,
+                "metric_field": "aggregate",
+                "render_boundary_max": 100.0,
+                "render_boundary_min": 0.0,
+                "threshold_levels": []
+            },
+            "aggregate_thresholds_alert_enabled": false,
+            "aggregate_thresholds_custom_alert_enabled": false,
+            "aggregate_thresholds_custom_alert_rules": [],
+            "alert_eval": "",
+            "alert_lag": "30",
+            "alert_on": "both",
+            "alert_period": "5",
+            "anomaly_detection_alerting_enabled": false,
+            "anomaly_detection_is_enabled": false,
+            "anomaly_detection_sensitivity": null,
+            "anomaly_detection_training_window": null,
+            "backfill_earliest_time": "-7d",
+            "backfill_enabled": false,
+            "base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024",
+            "base_search_id": null,
+            "base_search_metric": null,
+            "cohesive_ad": {
+                "sensitivity": 8
+            },
+            "cohesive_anomaly_detection_is_enabled": false,
+            "datamodel": {
+                "datamodel": "",
+                "field": "",
+                "object": "",
+                "owner_field": ""
+            },
+            "datamodel_filter": [],
+            "datamodel_filter_clauses": null,
+            "description": "Measures incoming and outgoing network traffic to assess network throughput.",
+            "did_load_recommendation": false,
+            "enabled": false,
+            "entity_filter_field": "host",
+            "entity_split_field": "host",
+            "entity_statop": "avg",
+            "entity_thresholds": {
+                "base_severity_color": "#99D18B",
+                "base_severity_color_light": "#DCEFD7",
+                "base_severity_label": "normal",
+                "base_severity_value": 2.0,
+                "gauge_max": 100,
+                "gauge_min": 0,
+                "is_max_static": false,
+                "is_min_static": true,
+                "metric_field": "network_traffic_mb",
+                "render_boundary_max": 100.0,
+                "render_boundary_min": 0.0,
+                "threshold_levels": []
+            },
+            "fill_gaps": "null_value",
+            "gap_custom_alert_value": 0.0,
+            "gap_severity": "unknown",
+            "gap_severity_color": "#CCCCCC",
+            "gap_severity_color_light": "#EEEEEE",
+            "gap_severity_value": "-1",
+            "is_filter_entities_to_service": false,
+            "is_recommended_time_policies": false,
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-network-services-network-traffic",
+            "kpi_base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024",
+            "kpi_template_kpi_id": "",
+            "kpi_threshold_template_id": "",
+            "metric_qualifier": "",
+            "metric_search_spec": {
+                "metric_index": "",
+                "metric_name": ""
+            },
+            "recommendation_training_window": "-30d",
+            "search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_entity(avg, network_traffic_mb, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic, true, true, true)` | eval kpi=\"Network Traffic\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_single_value(avg, avg, network_traffic_mb, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic)`",
+            "search_alert": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_entity(avg, network_traffic_mb, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic, true, true, true)` | eval kpi=\"Network Traffic\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
+            "search_alert_earliest": "5",
+            "search_alert_entities": "",
+            "search_buckets": "",
+            "search_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_single_value(avg, avg, network_traffic_mb, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic)`",
+            "search_occurrences": 1.0,
+            "search_time_compare": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_and_compare(avg, avg, network_traffic_mb, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic)`",
+            "search_time_series": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_entity_time_series(avg, network_traffic_mb, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic)`",
+            "search_time_series_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_entity_time_series(avg, network_traffic_mb, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-network-traffic)`",
+            "search_time_series_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min \n| stats avg(TXbytes) as TXbytes, avg(RXbytes) as RXbytes \n| eval network_traffic_mb = (RXbytes+TXbytes)/1024/1024 | `aggregate_raw_into_limited_entity_time_series(avg, network_traffic_mb, \"host\", 5)`",
+            "search_type": "adhoc",
+            "service_title": "Linux Network Services",
+            "threshold_direction": "both",
+            "threshold_eval": "",
+            "threshold_field": "network_traffic_mb",
+            "time_policies": {
+                "policies": {
+                    "default_policy": {
+                        "aggregate_thresholds": {
+                            "base_severity_color": "#99D18B",
+                            "base_severity_color_light": "#DCEFD7",
+                            "base_severity_label": "normal",
+                            "base_severity_value": 2.0,
+                            "gauge_max": 100,
+                            "gauge_min": 0,
+                            "is_max_static": false,
+                            "is_min_static": true,
+                            "metric_field": "NetworkLatency",
+                            "render_boundary_max": 100.0,
+                            "render_boundary_min": 0.0,
+                            "threshold_levels": []
+                        },
+                        "entity_thresholds": {
+                            "base_severity_color": "#99D18B",
+                            "base_severity_color_light": "#DCEFD7",
+                            "base_severity_label": "normal",
+                            "base_severity_value": 2.0,
+                            "gauge_max": 100,
+                            "gauge_min": 0,
+                            "is_max_static": false,
+                            "is_min_static": true,
+                            "metric_field": "NetworkLatency",
+                            "render_boundary_max": 100.0,
+                            "render_boundary_min": 0.0,
+                            "threshold_levels": []
+                        },
+                        "policy_type": "static",
+                        "time_blocks": [],
+                        "title": "Default"
+                    }
+                }
+            },
+            "title": "Network Traffic",
+            "trending_ad": {
+                "sensitivity": 8
+            },
+            "type": "kpis_primary",
+            "tz_offset": null,
+            "unit": "MB",
+            "urgency": 5.0,
+            "use_time_policies": false,
+            "was_recommendation_modified": false
         },
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -462,7 +595,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -480,7 +613,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host",
+            "base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -495,7 +628,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Monitors the operational status of the firewall to ensure network security measures are active.",
+            "description": "Monitors the rate of lost packets in the network to identify potential connectivity issues.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -510,7 +643,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
+                "metric_field": "packet_loss",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -523,9 +656,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-security-services-firewall-status",
-            "kpi_base_search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host",
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-network-services-packet-loss",
+            "kpi_base_search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +667,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status, true, true, true)` | eval kpi=\"Firewall Status\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`",
-            "search_alert": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status, true, true, true)` | eval kpi=\"Firewall Status\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_entity(avg, packet_loss, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss, true, true, true)` | eval kpi=\"Packet Loss\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_single_value(avg, avg, packet_loss, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss)`",
+            "search_alert": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_entity(avg, packet_loss, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-network-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss, true, true, true)` | eval kpi=\"Packet Loss\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-network-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`"
-            ],
+            "search_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_single_value(avg, avg, packet_loss, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`"
-            ],
-            "search_time_series": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_firewall_index` sourcetype=linux:firewall | eval KPI_Value=if(status=\"active\", 1, 0) | stats count as Firewall_Status by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-firewall-status)`"
-            ],
+            "search_time_compare": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_and_compare(avg, avg, packet_loss, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss)`",
+            "search_time_series": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_entity_time_series(avg, packet_loss, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss)`",
+            "search_time_series_aggregate": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_entity_time_series(avg, packet_loss, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-network-services, da-itsi-cp-atlas-linux-network-services-packet-loss)`",
+            "search_time_series_entities": "| mstats latest(interfaces_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(TXdropped) as TXdropped, avg(RXdropped) as RXdropped | eval packet_loss = RXdropped+TXdropped | `aggregate_raw_into_limited_entity_time_series(avg, packet_loss, \"host\", 5)`",
             "search_type": "adhoc",
-            "service_title": "Linux Security Services",
+            "service_title": "Linux Network Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "Firewall_Status",
+            "threshold_field": "packet_loss",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -575,7 +696,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
+                            "metric_field": "NetworkLatency",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -589,7 +710,7 @@
                             "gauge_min": 0,
                             "is_max_static": false,
                             "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
+                            "metric_field": "NetworkLatency",
                             "render_boundary_max": 100.0,
                             "render_boundary_min": 0.0,
                             "threshold_levels": []
@@ -600,7 +721,7 @@
                     }
                 }
             },
-            "title": "Firewall Status",
+            "title": "Packet Loss",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -609,173 +730,7 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
-        },
-        {
-            "adaptive_thresholding_training_window": "-7d",
-            "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
-            "aggregate_statop": "avg",
-            "aggregate_threshold_alert_enabled": false,
-            "aggregate_thresholds": {
-                "base_severity_color": "#99D18B",
-                "base_severity_color_light": "#DCEFD7",
-                "base_severity_label": "normal",
-                "base_severity_value": 2.0,
-                "gauge_max": 100,
-                "gauge_min": 0,
-                "is_max_static": false,
-                "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
-                "render_boundary_max": 100.0,
-                "render_boundary_min": 0.0,
-                "threshold_levels": []
-            },
-            "aggregate_thresholds_alert_enabled": false,
-            "aggregate_thresholds_custom_alert_enabled": false,
-            "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
-            "alert_lag": "30",
-            "alert_on": "both",
-            "alert_period": "5",
-            "anomaly_detection_alerting_enabled": false,
-            "anomaly_detection_is_enabled": false,
-            "anomaly_detection_sensitivity": null,
-            "anomaly_detection_training_window": null,
-            "backfill_earliest_time": "-7d",
-            "backfill_enabled": false,
-            "base_search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host",
-            "base_search_id": null,
-            "base_search_metric": null,
-            "cohesive_ad": {
-                "sensitivity": 8
-            },
-            "cohesive_anomaly_detection_is_enabled": false,
-            "datamodel": {
-                "datamodel": "",
-                "field": "",
-                "object": "",
-                "owner_field": ""
-            },
-            "datamodel_filter": [],
-            "datamodel_filter_clauses": null,
-            "description": "Tracks the application of security patches to maintain system integrity against vulnerabilities.",
-            "did_load_recommendation": false,
-            "enabled": false,
-            "entity_filter_field": "host",
-            "entity_split_field": "host",
-            "entity_statop": "avg",
-            "entity_thresholds": {
-                "base_severity_color": "#99D18B",
-                "base_severity_color_light": "#DCEFD7",
-                "base_severity_label": "normal",
-                "base_severity_value": 2.0,
-                "gauge_max": 100,
-                "gauge_min": 0,
-                "is_max_static": false,
-                "is_min_static": true,
-                "metric_field": "Security_Patch_Updates",
-                "render_boundary_max": 100.0,
-                "render_boundary_min": 0.0,
-                "threshold_levels": []
-            },
-            "fill_gaps": "null_value",
-            "gap_custom_alert_value": 0.0,
-            "gap_severity": "unknown",
-            "gap_severity_color": "#CCCCCC",
-            "gap_severity_color_light": "#EEEEEE",
-            "gap_severity_value": "-1",
-            "is_filter_entities_to_service": false,
-            "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates",
-            "kpi_base_search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host",
-            "kpi_template_kpi_id": "",
-            "kpi_threshold_template_id": "",
-            "metric_qualifier": "",
-            "metric_search_spec": {
-                "metric_index": "",
-                "metric_name": ""
-            },
-            "recommendation_training_window": "-30d",
-            "search": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates, true, true, true)` | eval kpi=\"Security Patch Updates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`",
-            "search_alert": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates, true, true, true)` | eval kpi=\"Security Patch Updates\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-security-services\" | `assess_urgency` | `gettime`"
-            ],
-            "search_alert_earliest": "5",
-            "search_alert_entities": "",
-            "search_buckets": "",
-            "search_entities": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`"
-            ],
-            "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`"
-            ],
-            "search_time_series": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_security_patches_index` sourcetype=linux_update | eval patch_applied=if(match(_raw, \"security patch applied\"), 1, 0) | stats sum(patch_applied) as Security_Patch_Updates by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-security-services, da-itsi-cp-atlas-linuxlinux-security-services-security-patch-updates)`"
-            ],
-            "search_type": "adhoc",
-            "service_title": "Linux Security Services",
-            "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "Security_Patch_Updates",
-            "time_policies": {
-                "policies": {
-                    "default_policy": {
-                        "aggregate_thresholds": {
-                            "base_severity_color": "#99D18B",
-                            "base_severity_color_light": "#DCEFD7",
-                            "base_severity_label": "normal",
-                            "base_severity_value": 2.0,
-                            "gauge_max": 100,
-                            "gauge_min": 0,
-                            "is_max_static": false,
-                            "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
-                            "render_boundary_max": 100.0,
-                            "render_boundary_min": 0.0,
-                            "threshold_levels": []
-                        },
-                        "entity_thresholds": {
-                            "base_severity_color": "#99D18B",
-                            "base_severity_color_light": "#DCEFD7",
-                            "base_severity_label": "normal",
-                            "base_severity_value": 2.0,
-                            "gauge_max": 100,
-                            "gauge_min": 0,
-                            "is_max_static": false,
-                            "is_min_static": true,
-                            "metric_field": "Security_Patch_Updates",
-                            "render_boundary_max": 100.0,
-                            "render_boundary_min": 0.0,
-                            "threshold_levels": []
-                        },
-                        "policy_type": "static",
-                        "time_blocks": [],
-                        "title": "Default"
-                    }
-                }
-            },
-            "title": "Security Patch Updates",
-            "trending_ad": {
-                "sensitivity": 8
-            },
-            "type": "kpis_primary",
-            "tz_offset": null,
-            "unit": "",
-            "urgency": 5.0,
-            "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         }
     ],
     "service_tags": {
@@ -786,20 +741,13 @@
     "services_depending_on_me": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-security-services"
+                "SHKPI-da-itsi-cp-atlas-linux-network-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-operating-system-health"
+            "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
-    "services_depends_on": [
-        {
-            "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
-            ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
-        }
-    ],
+    "services_depends_on": [],
     "team_id": "default_itsi_security_group",
-    "title": "Linux Security Services",
+    "title": "Linux Network Services",
     "version": "0.0.1"
 }

@@ -30,7 +30,7 @@
     "description": "Manages the storage subsystems, including disk usage and I/O operations.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-storage-services",
+    "key": "da-itsi-cp-atlas-linux-storage-services",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-storage-services",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-storage-services",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,23 +211,17 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": null,
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
-            ],
-            "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | timechart avg(health_score) AS aggregate"
-            ],
-            "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-storage-services)` | timechart avg(health_score) AS aggregate"
-            ],
+            "search_time_compare": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))",
+            "search_time_series": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | timechart avg(health_score) AS aggregate",
+            "search_time_series_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-storage-services)` | timechart avg(health_score) AS aggregate",
             "search_time_series_entities": "",
             "search_type": "adhoc",
             "service_title": "Linux Storage Services",
@@ -285,7 +279,7 @@
         {
             "adaptive_thresholding_training_window": "-7d",
             "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
+            "aggregate_eval": "",
             "aggregate_statop": "avg",
             "aggregate_threshold_alert_enabled": false,
             "aggregate_thresholds": {
@@ -297,7 +291,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -305,7 +299,7 @@
             "aggregate_thresholds_alert_enabled": false,
             "aggregate_thresholds_custom_alert_enabled": false,
             "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
+            "alert_eval": "",
             "alert_lag": "30",
             "alert_on": "both",
             "alert_period": "5",
@@ -315,7 +309,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
+            "base_search": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -345,7 +339,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "usage_percent",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -358,9 +352,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage",
-            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host",
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-storage-services-disk-usage",
+            "kpi_base_search": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,35 +363,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`",
-            "search_alert": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_entity(avg, usage_percent, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_single_value(avg, avg, usage_percent, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
+            "search_alert": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_entity(avg, usage_percent, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage, true, true, true)` | eval kpi=\"Disk Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
-            ],
+            "search_entities": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_single_value(avg, avg, usage_percent, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
-            ],
-            "search_time_series": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_disk_index` sourcetype=linux_disk | eval percent_used=round((used / (used + free)) * 100, 2) | stats avg(percent_used) as Disk_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-disk-usage)`"
-            ],
+            "search_time_compare": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_and_compare(avg, avg, usage_percent, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
+            "search_time_series": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_entity_time_series(avg, usage_percent, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
+            "search_time_series_aggregate": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_entity_time_series(avg, usage_percent, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-disk-usage)`",
+            "search_time_series_entities": "`linux_logs` tag=performance source=df \n| stats avg(PercentUsedSpace) as usage_percent by host | `aggregate_raw_into_limited_entity_time_series(avg, usage_percent, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Storage Services",
             "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "Disk_Usage",
+            "threshold_eval": "",
+            "threshold_field": "usage_percent",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -444,13 +426,12 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         },
         {
             "adaptive_thresholding_training_window": "-7d",
             "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
+            "aggregate_eval": "",
             "aggregate_statop": "avg",
             "aggregate_threshold_alert_enabled": false,
             "aggregate_thresholds": {
@@ -462,7 +443,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -470,7 +451,7 @@
             "aggregate_thresholds_alert_enabled": false,
             "aggregate_thresholds_custom_alert_enabled": false,
             "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
+            "alert_eval": "",
             "alert_lag": "30",
             "alert_on": "both",
             "alert_period": "5",
@@ -480,7 +461,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
+            "base_search": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -495,7 +476,7 @@
             },
             "datamodel_filter": [],
             "datamodel_filter_clauses": null,
-            "description": "Tracks the number of inodes used to ensure file system integrity and availability.",
+            "description": "Tracks the number of read operations to ensure file system integrity and availability.",
             "did_load_recommendation": false,
             "enabled": false,
             "entity_filter_field": "host",
@@ -510,7 +491,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "read_ops",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -523,9 +504,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage",
-            "kpi_base_search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host",
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-storage-services-read-ops",
+            "kpi_base_search": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +515,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`",
-            "search_alert": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage, true, true, true)` | eval kpi=\"Inode Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity(avg, read_ops, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops, true, true, true)` | eval kpi=\"Read Ops\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_single_value(avg, avg, read_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops)`",
+            "search_alert": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity(avg, read_ops, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops, true, true, true)` | eval kpi=\"Read Ops\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
-            ],
+            "search_entities": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_single_value(avg, avg, read_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
-            ],
-            "search_time_series": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:inode | stats count as inode_count by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-inode-usage)`"
-            ],
+            "search_time_compare": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_and_compare(avg, avg, read_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops)`",
+            "search_time_series": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity_time_series(avg, read_ops, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops)`",
+            "search_time_series_aggregate": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity_time_series(avg, read_ops, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-read-ops)`",
+            "search_time_series_entities": "| mstats avg(iostat_metric.r_s) as read_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_limited_entity_time_series(avg, read_ops, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Storage Services",
             "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "inode_count",
+            "threshold_eval": "",
+            "threshold_field": "read_ops",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -600,7 +569,7 @@
                     }
                 }
             },
-            "title": "Inode Usage",
+            "title": "Read Ops",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -609,8 +578,7 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         },
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -627,7 +595,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -645,7 +613,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
+            "base_search": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -675,7 +643,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "kpi_value",
+                "metric_field": "write_ops",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -688,9 +656,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
-            "key": "da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations",
-            "kpi_base_search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host",
+            "is_split_by_entity": true,
+            "key": "da-itsi-cp-atlas-linux-storage-services-write-ops",
+            "kpi_base_search": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -699,35 +667,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`",
-            "search_alert": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations, true, true, true)` | eval kpi=\"Read/Write Operations\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linuxlinux-storage-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity(avg, write_ops, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops, true, true, true)` | eval kpi=\"Write Ops\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_single_value(avg, avg, write_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops)`",
+            "search_alert": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity(avg, write_ops, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-storage-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops, true, true, true)` | eval kpi=\"Write Ops\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-storage-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
-            ],
+            "search_entities": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_single_value(avg, avg, write_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
-            ],
-            "search_time_series": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_disk_index` sourcetype=linux_disk_io | mstats avg(_value) as kpi_value where index=`linux_disk_index` by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linuxlinux-storage-services, da-itsi-cp-atlas-linuxlinux-storage-services-read-write-operations)`"
-            ],
+            "search_time_compare": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_and_compare(avg, avg, write_ops, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops)`",
+            "search_time_series": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity_time_series(avg, write_ops, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops)`",
+            "search_time_series_aggregate": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_entity_time_series(avg, write_ops, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-storage-services, da-itsi-cp-atlas-linux-storage-services-write-ops)`",
+            "search_time_series_entities": "| mstats avg(iostat_metric.w_s) as write_ops where `linux_metrics` by host span=15min | `aggregate_raw_into_limited_entity_time_series(avg, write_ops, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Storage Services",
             "threshold_direction": "both",
             "threshold_eval": null,
-            "threshold_field": "kpi_value",
+            "threshold_field": "write_ops",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -765,7 +721,7 @@
                     }
                 }
             },
-            "title": "Read/Write Operations",
+            "title": "Write Ops",
             "trending_ad": {
                 "sensitivity": 8
             },
@@ -774,8 +730,7 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         }
     ],
     "service_tags": {
@@ -786,19 +741,12 @@
     "services_depending_on_me": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-storage-services"
+                "SHKPI-da-itsi-cp-atlas-linux-storage-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-operating-system-health"
+            "service_id": "da-itsi-cp-atlas-linux-operating-system-health"
         }
     ],
-    "services_depends_on": [
-        {
-            "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
-            ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-process-and-service-availability"
-        }
-    ],
+    "services_depends_on": [],
     "team_id": "default_itsi_security_group",
     "title": "Linux Storage Services",
     "version": "0.0.1"

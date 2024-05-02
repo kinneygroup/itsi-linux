@@ -30,7 +30,7 @@
     "description": "Monitors the overall health and performance of the Linux operating system.",
     "enabled": false,
     "entity_rules": [],
-    "key": "da-itsi-cp-atlas-linuxlinux-operating-system-health",
+    "key": "da-itsi-cp-atlas-linux-operating-system-health",
     "kpis": [
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -111,7 +111,7 @@
             "anomaly_detection_training_window": "-7d",
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)`",
+            "base_search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)`",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -201,7 +201,7 @@
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
             "is_split_by_entity": false,
-            "key": "SHKPI-da-itsi-cp-atlas-linuxlinux-operating-system-health",
+            "key": "SHKPI-da-itsi-cp-atlas-linux-operating-system-health",
             "kpi_base_search": "",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
@@ -211,23 +211,17 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)` | stats latest(health_score) AS aggregate",
-            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)` | stats latest(health_score) AS aggregate",
+            "search": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)` | stats latest(health_score) AS aggregate",
+            "search_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)` | stats latest(health_score) AS aggregate",
             "search_alert": "",
             "search_alert_earliest": "15",
             "search_alert_entities": "",
             "search_buckets": "",
             "search_entities": null,
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
-            ],
-            "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)` | timechart avg(health_score) AS aggregate"
-            ],
-            "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linuxlinux-operating-system-health)` | timechart avg(health_score) AS aggregate"
-            ],
+            "search_time_compare": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))",
+            "search_time_series": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)` | timechart avg(health_score) AS aggregate",
+            "search_time_series_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-operating-system-health)` | timechart avg(health_score) AS aggregate",
             "search_time_series_entities": "",
             "search_type": "adhoc",
             "service_title": "Linux Operating System Health",
@@ -292,33 +286,27 @@
     "services_depends_on": [
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-network-services"
+                "SHKPI-da-itsi-cp-atlas-linux-network-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-network-services"
+            "service_id": "da-itsi-cp-atlas-linux-network-services"
         },
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-storage-services"
+                "SHKPI-da-itsi-cp-atlas-linux-storage-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-storage-services"
+            "service_id": "da-itsi-cp-atlas-linux-storage-services"
         },
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-compute-services"
+                "SHKPI-da-itsi-cp-atlas-linux-compute-services"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-compute-services"
+            "service_id": "da-itsi-cp-atlas-linux-compute-services"
         },
         {
             "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-security-services"
+                "SHKPI-da-itsi-cp-atlas-linux-user-activity"
             ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-security-services"
-        },
-        {
-            "kpis_depending_on": [
-                "SHKPI-da-itsi-cp-atlas-linuxlinux-user-activity-services"
-            ],
-            "service_id": "da-itsi-cp-atlas-linuxlinux-user-activity-services"
+            "service_id": "da-itsi-cp-atlas-linux-user-activity"
         }
     ],
     "team_id": "default_itsi_security_group",
