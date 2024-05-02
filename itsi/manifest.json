@@ -5,8 +5,7 @@
         "da-itsi-cp-atlas-linux-network-services.json",
         "da-itsi-cp-atlas-linux-storage-services.json",
         "da-itsi-cp-atlas-linux-compute-services.json",
-        "da-itsi-cp-atlas-linux-security-services.json",
-        "da-itsi-cp-atlas-linux-user-activity-services.json"
+        "da-itsi-cp-atlas-linux-user-activity.json"
     ],
     "kpi_base_searches": []
 }

@@ -219,15 +219,9 @@
             "search_buckets": "",
             "search_entities": null,
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))"
-            ],
-            "search_time_series": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate"
-            ],
-            "search_time_series_aggregate": [
-                "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate"
-            ],
+            "search_time_compare": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` [| stats count | addinfo | eval search= \"earliest=\" + tostring(info_min_time-(info_max_time-info_min_time))+ \" latest=\" + tostring(info_max_time) |fields search] | addinfo | eval bucket=if(_time<info_max_time-((info_max_time-info_min_time)/2), \"last_window\", \"current_window\") | stats avg(health_score) AS aggregate BY bucket | reverse | delta aggregate AS window_delta | search bucket=current_window | eval window_direction=if(window_delta >0, \"increase\", if(window_delta < 0, \"decrease\", \"none\"))",
+            "search_time_series": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate",
+            "search_time_series_aggregate": "`get_full_itsi_summary_service_health_events(da-itsi-cp-atlas-linux-compute-services)` | timechart avg(health_score) AS aggregate",
             "search_time_series_entities": "",
             "search_type": "adhoc",
             "service_title": "Linux Compute Services",
@@ -285,7 +279,7 @@
         {
             "adaptive_thresholding_training_window": "-7d",
             "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
+            "aggregate_eval": "",
             "aggregate_statop": "avg",
             "aggregate_threshold_alert_enabled": false,
             "aggregate_thresholds": {
@@ -305,7 +299,7 @@
             "aggregate_thresholds_alert_enabled": false,
             "aggregate_thresholds_custom_alert_enabled": false,
             "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
+            "alert_eval": "",
             "alert_lag": "30",
             "alert_on": "both",
             "alert_period": "5",
@@ -315,7 +309,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage",
+            "base_search": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2)",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -358,9 +352,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
+            "is_split_by_entity": true,
             "key": "da-itsi-cp-atlas-linux-compute-services-cpu-usage",
-            "kpi_base_search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage",
+            "kpi_base_search": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2)",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -369,34 +363,22 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
-            "search_alert": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_entity(avg, cpu_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_single_value(avg, avg, cpu_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
+            "search_alert": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_entity(avg, cpu_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage, true, true, true)` | eval kpi=\"CPU Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
-            ],
+            "search_entities": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_single_value(avg, avg, cpu_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
-            ],
-            "search_time_series": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_cpu_index` sourcetype=linux:cpu | mstats avg(_value) as cpu_usage WHERE index=`linux_cpu_index` AND metric_name=cpu.percent by host | eval aggregate_field=cpu_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`"
-            ],
+            "search_time_compare": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_and_compare(avg, avg, cpu_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
+            "search_time_series": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_entity_time_series(avg, cpu_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
+            "search_time_series_aggregate": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_entity_time_series(avg, cpu_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-cpu-usage)`",
+            "search_time_series_entities": "| mstats latest(cpu_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(pctIdle) as pctIdle |eval cpu_usage = round(100-pctIdle,2) | `aggregate_raw_into_limited_entity_time_series(avg, cpu_usage, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Compute Services",
             "threshold_direction": "both",
-            "threshold_eval": null,
+            "threshold_eval": "",
             "threshold_field": "cpu_usage",
             "time_policies": {
                 "policies": {
@@ -444,13 +426,12 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         },
         {
             "adaptive_thresholding_training_window": "-7d",
             "adaptive_thresholds_is_enabled": false,
-            "aggregate_eval": null,
+            "aggregate_eval": "",
             "aggregate_statop": "avg",
             "aggregate_threshold_alert_enabled": false,
             "aggregate_thresholds": {
@@ -462,7 +443,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "swap_usage",
+                "metric_field": "aggregate",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -470,7 +451,7 @@
             "aggregate_thresholds_alert_enabled": false,
             "aggregate_thresholds_custom_alert_enabled": false,
             "aggregate_thresholds_custom_alert_rules": [],
-            "alert_eval": null,
+            "alert_eval": "",
             "alert_lag": "30",
             "alert_on": "both",
             "alert_period": "5",
@@ -480,7 +461,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host",
+            "base_search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2)",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -510,7 +491,7 @@
                 "gauge_min": 0,
                 "is_max_static": false,
                 "is_min_static": true,
-                "metric_field": "swap_usage",
+                "metric_field": "mem_usage",
                 "render_boundary_max": 100.0,
                 "render_boundary_min": 0.0,
                 "threshold_levels": []
@@ -523,9 +504,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
+            "is_split_by_entity": true,
             "key": "da-itsi-cp-atlas-linux-compute-services-memory-usage",
-            "kpi_base_search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host",
+            "kpi_base_search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2)",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -534,35 +515,23 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
-            "search_alert": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_entity(avg, mem_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_single_value(avg, avg, mem_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
+            "search_alert": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_entity(avg, mem_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage, true, true, true)` | eval kpi=\"Memory Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
-            ],
+            "search_entities": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_single_value(avg, avg, mem_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
-            ],
-            "search_time_series": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:mem | eval memory_used=total-free-buffers-cached | stats avg(memory_used) as Memory_Usage by host | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`"
-            ],
+            "search_time_compare": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_and_compare(avg, avg, mem_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
+            "search_time_series": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_entity_time_series(avg, mem_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
+            "search_time_series_aggregate": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_entity_time_series(avg, mem_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-memory-usage)`",
+            "search_time_series_entities": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(memUsedPct) as memUsedPct | eval mem_usage=round(memUsedPct,2) | `aggregate_raw_into_limited_entity_time_series(avg, mem_usage, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Compute Services",
             "threshold_direction": "both",
-            "threshold_eval": null,
-            "threshold_field": "Memory_Usage",
+            "threshold_eval": "",
+            "threshold_field": "mem_usage",
             "time_policies": {
                 "policies": {
                     "default_policy": {
@@ -609,8 +578,7 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         },
         {
             "adaptive_thresholding_training_window": "-7d",
@@ -645,7 +613,7 @@
             "anomaly_detection_training_window": null,
             "backfill_earliest_time": "-7d",
             "backfill_enabled": false,
-            "base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage",
+            "base_search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2)",
             "base_search_id": null,
             "base_search_metric": null,
             "cohesive_ad": {
@@ -688,9 +656,9 @@
             "gap_severity_value": "-1",
             "is_filter_entities_to_service": false,
             "is_recommended_time_policies": false,
-            "is_split_by_entity": false,
+            "is_split_by_entity": true,
             "key": "da-itsi-cp-atlas-linux-compute-services-swap-usage",
-            "kpi_base_search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage",
+            "kpi_base_search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2)",
             "kpi_template_kpi_id": "",
             "kpi_threshold_template_id": "",
             "metric_qualifier": "",
@@ -699,30 +667,18 @@
                 "metric_name": ""
             },
             "recommendation_training_window": "-30d",
-            "search": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
-            "search_aggregate": "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
-            "search_alert": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service(avg, count)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`"
-            ],
+            "search": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_entity(avg, swap_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
+            "search_aggregate": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_single_value(avg, avg, swap_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
+            "search_alert": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_entity(avg, swap_usage, \"host\")` | eval sec_grp = \"default_itsi_security_group\" | `match_entities(host, sec_grp)` | eval serviceid = \"da-itsi-cp-atlas-linux-compute-services\" | `aggregate_entity_into_service(avg)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage, true, true, true)` | eval kpi=\"Swap Usage\", urgency=\"5\", alert_period=\"5\", serviceid=\"da-itsi-cp-atlas-linux-compute-services\" | `assess_urgency` | `gettime`",
             "search_alert_earliest": "5",
             "search_alert_entities": "",
             "search_buckets": "",
-            "search_entities": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_single_value(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
-            ],
+            "search_entities": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_single_value(avg, avg, swap_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
             "search_occurrences": 1.0,
-            "search_time_compare": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_and_compare(avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
-            ],
-            "search_time_series": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
-            ],
-            "search_time_series_aggregate": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
-            ],
-            "search_time_series_entities": [
-                "`linux_index` sourcetype=linux:metrics | mstats avg(_value) as swap_usage where metric_name=\"load_average\" by host | eval aggregate_field=swap_usage | `aggregate_raw_into_service_time_series( avg, count, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`"
-            ],
+            "search_time_compare": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_and_compare(avg, avg, swap_usage, \"host\", 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
+            "search_time_series": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_entity_time_series(avg, swap_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
+            "search_time_series_aggregate": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_entity_time_series(avg, swap_usage, \"host\", 5)` | `aggregate_entity_into_service_time_series(avg, 5)` | `assess_severity(da-itsi-cp-atlas-linux-compute-services, da-itsi-cp-atlas-linux-compute-services-swap-usage)`",
+            "search_time_series_entities": "| mstats latest(vmstat_metric.*) AS * where `linux_metrics` by host span=15min | stats avg(swapUsedPct) as swapUsedPct | eval swap_usage=round(swapUsedPct,2) | `aggregate_raw_into_limited_entity_time_series(avg, swap_usage, \"host\", 5)`",
             "search_type": "adhoc",
             "service_title": "Linux Compute Services",
             "threshold_direction": "both",
@@ -774,8 +730,7 @@
             "unit": "",
             "urgency": 5.0,
             "use_time_policies": false,
-            "was_recommendation_modified": false,
-            "version": "0.0.1"
+            "was_recommendation_modified": false
         }
     ],
     "service_tags": {
