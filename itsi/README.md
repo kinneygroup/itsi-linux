@@ -73,7 +73,7 @@ For feedback or questions regarding the content pack, please visit our [GitHub r
 
 You can also reach out to us via email at support@kinneygroup.com.
 
-For more information about Kinney Group's Splunk Products, visit our [website](https://kinneygroup.com/atlas).
+For more information about Kinney Group's Splunk Products, visit our [website](https://atlas.presidio.com).
 
 ## Version History
 
