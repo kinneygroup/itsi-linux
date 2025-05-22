@@ -73,7 +73,7 @@ For feedback or questions regarding the content pack, please visit our [GitHub r
 
 You can also reach out to us via email at atlassupport@presidio.com.
 
-For more information about Presidio Splunk Solutions Products, visit our [website](https://kinneygroup.com/atlas).
+For more information about Presidio Splunk Solutions Products, visit our [website](https://atlas.presidio.com).
 
 ## Version History
 
