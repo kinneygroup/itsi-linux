@@ -1,5 +1,5 @@
 ## Summary
-The ITSI Content Pack for Linux from Kinney Group is meticulously crafted to monitor and ensure the health and performance of Linux operating systems. It utilizes Splunk ITSI to provide comprehensive insights into various system components such as the kernel, filesystem, network, security, and user activity. This content pack is a vital resource for system administrators and IT professionals aiming to maintain system integrity and optimize performance.
+The ITSI Content Pack for Linux from Presidio Splunk Solutions is meticulously crafted to monitor and ensure the health and performance of Linux operating systems. It utilizes Splunk ITSI to provide comprehensive insights into various system components such as the kernel, filesystem, network, security, and user activity. This content pack is a vital resource for system administrators and IT professionals aiming to maintain system integrity and optimize performance.
 
 * Holistic System Monitoring: Provides a complete overview of the Linux operating system health, including performance metrics and system integrity.
 * Targeted Component Insights: Delivers detailed monitoring of critical Linux components such as the kernel, filesystem, network, and security features.
@@ -10,7 +10,7 @@ This ITSI Content Pack is open source and available for community collaboration 
 ## Details
 The ITSI Content Pack for Linux offers a suite of services and KPIs designed to monitor the health and performance of Linux operating systems. It is structured to provide IT professionals with the tools necessary to diagnose and resolve issues promptly, ensuring system stability and efficiency. The content pack addresses common challenges faced in Linux environments, such as resource allocation, security vulnerabilities, and performance bottlenecks.
 
-For installation guidance and best practices, refer to the [Kinney Group documentation for installing Content Packs](https://kinneygroup.com/blog/installing-itsi-content-packs/).
+For installation guidance and best practices, refer to the [Presidio Splunk Solutions documentation for installing Content Packs](https://kinneygroup.com/blog/installing-itsi-content-packs/).
 
 ### Services
 Each service within the content pack is purpose-built based on its reasoning:
@@ -61,26 +61,27 @@ Please follow the standard Splunk installation procedures for add-ons and apps.
 
 ## Troubleshooting
 
-For troubleshooting assistance, please refer to the [Kinney Group ITSI Content Pack Blog](https://kinneygroup.com/blog/installing-itsi-content-packs/).
+For troubleshooting assistance, please refer to the [Presidio Splunk Solutions ITSI Content Pack Blog](https://kinneygroup.com/blog/installing-itsi-content-packs/).
 
 If you encounter issues, consult the documentation provided with the content pack or visit our [GitHub repository](https://www.github.com/kinneygroup).
 
-For further support, contact support@kinneygroup.com.
+For further support, contact atlassupport@presidio.com.
 
 ## Contact
 
 For feedback or questions regarding the content pack, please visit our [GitHub repository](https://www.github.com/kinneygroup).
 
-You can also reach out to us via email at support@kinneygroup.com.
+You can also reach out to us via email at atlassupport@presidio.com.
 
-For more information about Kinney Group's Splunk Products, visit our [website](https://kinneygroup.com/atlas).
+For more information about Presidio Splunk Solutions Products, visit our [website](https://atlas.presidio.com).
 
 ## Version History
 
 | Version | Date  | Description |
 |---------|-------|-------------|
 | 0.0.2   | 05/03/24 | Icon Update to Prerelease |
+| 1.0.0   | 05/19/25 | Documentation Update |
 
 ## Considerations
 
-Before installing the content pack, ensure that you have the necessary permissions and that your Splunk environment meets the prerequisites mentioned above. For best practices and additional guidance, refer to the [Kinney Group ITSI Content Pack Blog](https://kinneygroup.com/blog/installing-itsi-content-packs/).
+Before installing the content pack, ensure that you have the necessary permissions and that your Splunk environment meets the prerequisites mentioned above. For best practices and additional guidance, refer to the [Presidio Splunk Solutions ITSI Content Pack Blog](https://kinneygroup.com/blog/installing-itsi-content-packs/).
